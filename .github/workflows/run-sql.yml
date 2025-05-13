@@ -1,0 +1,32 @@
+# .github/workflows/run-sql.yml
+
+name: Run SQL Query on Rfam DB
+
+# Этот блок описывает, КОГДА запускать workflow
+on:
+  push:
+    paths:
+      - 'query.sql'  # запускать только если изменился этот файл
+
+jobs:
+  run-sql-query:
+    runs-on: ubuntu-latest  # GitHub предоставляет виртуальную машину на Ubuntu
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3  # Скачиваем твой репозиторий на виртуальную машину
+
+      - name: Install MySQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mysql-client
+
+      - name: Run SQL query on Rfam
+        run: |
+          echo "Executing SQL queries against Rfam public MySQL database..."
+          mysql \
+            --host=mysql-rfam-public.ebi.ac.uk \
+            --user=rfamro \
+            --port=4497 \
+            --database=Rfam \
+            < query.sql
